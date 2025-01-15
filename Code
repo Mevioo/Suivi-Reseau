@@ -1,0 +1,56 @@
+import asyncio
+import aiohttp
+import aiofiles
+import csv
+import socket
+import time
+from ipaddress import ip_network, ip_address
+
+# Fonction pour tester si une IP est active en envoyant un ping ICMP
+async def ping_ip(ip, session):
+    start_time = time.time()
+    try:
+        async with session.get(f'http://{ip}', timeout=1) as response:
+            latency = round((time.time() - start_time) * 1000)  # en millisecondes
+            return (ip, "Active", latency)
+    except:
+        return (ip, "Inactive", None)
+
+# Fonction pour scanner une plage d'IP de manière asynchrone
+async def scan_ips(ip_range):
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for ip in ip_range:
+            tasks.append(ping_ip(ip, session))
+        results = await asyncio.gather(*tasks)
+        return results
+
+# Fonction pour sauvegarder les résultats dans un fichier CSV
+async def save_results_to_csv(results, filename):
+    async with aiofiles.open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["IP", "Status", "Ping (ms)"])
+        for result in results:
+            writer.writerow(result)
+
+# Fonction pour détecter les ports ouverts (exemple avec port 80)
+async def scan_ports(ip, session, port=80):
+    try:
+        reader, writer = await asyncio.open_connection(ip, port)
+        return (ip, port, "Open")
+    except:
+        return (ip, port, "Closed")
+
+# Fonction principale pour scanner une plage d'adresses IP
+async def main(ip_range_str, output_file):
+    network = ip_network(ip_range_str, strict=False)
+    ip_range = [str(ip) for ip in network.hosts()]  # Exclut l'adresse réseau et de diffusion
+    results = await scan_ips(ip_range)
+    await save_results_to_csv(results, output_file)
+    print(f"Scan terminé. Résultats sauvegardés dans {output_file}")
+
+if __name__ == '__main__':
+    ip_range = '192.168.1.0/24'  # Exemple de plage d'IP
+    output_file = 'results.csv'
+    asyncio.run(main(ip_range, output_file))
+
