@@ -1,56 +1,67 @@
 import asyncio
-import aiohttp
-import aiofiles
 import csv
-import socket
-import time
-from ipaddress import ip_network, ip_address
+import ipaddress
+import argparse
+import subprocess
 
-# Fonction pour tester si une IP est active en envoyant un ping ICMP
-async def ping_ip(ip, session):
-    start_time = time.time()
-    try:
-        async with session.get(f'http://{ip}', timeout=1) as response:
-            latency = round((time.time() - start_time) * 1000)  # en millisecondes
-            return (ip, "Active", latency)
-    except:
-        return (ip, "Inactive", None)
+# Fonction pour effectuer un ping sur une adresse IP
+async def ping_ip(ip):
+    # Utilisation de subprocess pour appeler 'ping' de manière synchrone, dans un thread séparé
+    result = await asyncio.to_thread(subprocess.run, 
+                                      ['ping', '-n', '1', ip],
+                                      capture_output=True, text=True)
+    if "TTL=" in result.stdout:
+        return ip, "Active", None
+    return ip, "Inactive", None
 
-# Fonction pour scanner une plage d'IP de manière asynchrone
-async def scan_ips(ip_range):
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for ip in ip_range:
-            tasks.append(ping_ip(ip, session))
-        results = await asyncio.gather(*tasks)
-        return results
+# Fonction pour scanner une plage d'adresses IP
+async def scan_range(ip_range):
+    network = ipaddress.ip_network(ip_range, strict=False)
+    tasks = [ping_ip(str(ip)) for ip in network.hosts()]
+    return await asyncio.gather(*tasks)
 
-# Fonction pour sauvegarder les résultats dans un fichier CSV
-async def save_results_to_csv(results, filename):
-    async with aiofiles.open(filename, mode='w', newline='') as file:
+# Fonction pour scanner des adresses IP à partir d'un fichier
+async def scan_file(file_path):
+    with open(file_path, mode='r') as file:
+        lines = file.readlines()
+    tasks = [ping_ip(line.strip()) for line in lines if line.strip()]
+    return await asyncio.gather(*tasks)
+
+# Fonction principale qui gère les entrées et lance le scan
+async def main():
+    parser = argparse.ArgumentParser(description='Asynchronous Network Scanner')
+    parser.add_argument('--range', help='IP range to scan (e.g., 192.168.1.0/24)')
+    parser.add_argument('--file', help='File containing IP addresses to scan')
+    args = parser.parse_args()
+    
+    if args.range:
+        results = await scan_range(args.range)
+    elif args.file:
+        results = await scan_file(args.file)
+    else:
+        print("Please specify either --range or --file.")
+        return
+    
+    # Vérifie si des résultats ont été trouvés
+    if not any(status == "Active" for _, status, _ in results):
+        print("Le programme n'a pas trouvé d'autre adresse IP.")
+        return
+    
+    # Sauvegarde des résultats dans un fichier CSV
+    with open('results.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["IP", "Status", "Ping (ms)"])
-        for result in results:
-            writer.writerow(result)
+        for row in results:
+            writer.writerow(row)
+    
+    # Affichage des résultats
+    for ip, status, _ in results:
+        if status == "Active":
+            print(f"{ip} Active")
+        else:
+            print(f"{ip} Inactive")
+    print("Résultats sauvegardés dans results.csv")
 
-# Fonction pour détecter les ports ouverts (exemple avec port 80)
-async def scan_ports(ip, session, port=80):
-    try:
-        reader, writer = await asyncio.open_connection(ip, port)
-        return (ip, port, "Open")
-    except:
-        return (ip, port, "Closed")
-
-# Fonction principale pour scanner une plage d'adresses IP
-async def main(ip_range_str, output_file):
-    network = ip_network(ip_range_str, strict=False)
-    ip_range = [str(ip) for ip in network.hosts()]  # Exclut l'adresse réseau et de diffusion
-    results = await scan_ips(ip_range)
-    await save_results_to_csv(results, output_file)
-    print(f"Scan terminé. Résultats sauvegardés dans {output_file}")
-
+# Lancer l'application
 if __name__ == '__main__':
-    ip_range = '192.168.1.0/24'  # Exemple de plage d'IP
-    output_file = 'results.csv'
-    asyncio.run(main(ip_range, output_file))
-
+    asyncio.run(main())
