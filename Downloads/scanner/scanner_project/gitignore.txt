@@ -1,0 +1,16 @@
+# Ignorer les fichiers et répertoires système
+/.vscode/
+/AppData/
+/Application Data/
+/Contacts/
+/Cookies/
+/Desktop/
+/Documents/
+/OneDrive/
+/Pictures/
+/Videos/
+/Saved Games/
+/ntuser.dat
+*.exe
+*.log
+*.bak
