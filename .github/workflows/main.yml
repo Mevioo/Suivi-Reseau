@@ -51,7 +51,7 @@ jobs:
 
     - name: Build Sphinx docs
       run: |
-        cd Downloads/scanner/scanner_project/docs  # Vérifie que c'est bien le bon dossier
+        cd Downloads/scanner/scanner_project/config  # Vérifie que c'est bien le bon dossier
         ls -la  # Affiche les fichiers pour vérifier la présence du Makefile
         if [ -f Makefile ]; then
           make html  # Génère la documentation si Makefile est présent
