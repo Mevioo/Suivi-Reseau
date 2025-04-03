@@ -3,58 +3,58 @@ name: Python CI
 on:
   push:
     branches:
-      - main  # Le workflow s'exécute sur chaque push sur la branche principale
+      - main  
   pull_request:
     branches:
-      - main  # S'exécute aussi lors des PRs vers la branche principale
+      - main  
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Utilise une image Ubuntu
+    runs-on: ubuntu-latest  
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2  # Clone ton repo
+      uses: actions/checkout@v2  
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'  # Utilise la version 3.9 de Python
+        python-version: '3.9'  
 
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt || echo "No requirements.txt found"
-        pip install pytest
-        pip install sphinx  # Installe Sphinx
+        pip install pytest sphinx  
 
     - name: Run tests with pytest
-      run: pytest  # Lance pytest pour exécuter les tests unitaires
+      run: pytest  
 
   docs:
-    runs-on: ubuntu-latest  # Utilise une image Ubuntu
+    runs-on: ubuntu-latest  
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2  # Clone ton repo
+      uses: actions/checkout@v2  
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'  # Utilise la version 3.9 de Python
+        python-version: '3.9'  
 
     - name: Install Sphinx
+      run: pip install sphinx  
+
+    - name: Ensure index.rst exists
       run: |
-        pip install sphinx
+        cd Downloads/scanner/scanner_project/config  
+        if [ ! -f index.rst ]; then
+          echo "index.rst manquant, création automatique..."
+          echo -e ".. Suivi Reseau Documentation\n\nWelcome to Suivi Reseau's documentation!\n" > index.rst
+        fi
 
     - name: Build Sphinx docs
       run: |
-        cd Downloads/scanner/scanner_project/config  # Vérifie que c'est bien le bon dossier
-        ls -la  # Affiche les fichiers pour vérifier la présence du Makefile
-        if [ -f Makefile ]; then
-          make html  # Génère la documentation si Makefile est présent
-        else
-          sphinx-build -b html . _build/html  # Génère la doc avec sphinx-build si pas de Makefile
-        fi
+        cd Downloads/scanner/scanner_project/config  
+        make html  
