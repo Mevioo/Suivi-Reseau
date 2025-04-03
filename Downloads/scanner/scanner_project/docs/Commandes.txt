@@ -1,0 +1,4 @@
+cd C:\Users\Administrateur\Downloads\scanner reseau
+pip install aiofiles aioping
+python scanner.py --range 192.168.2.0/24
+
