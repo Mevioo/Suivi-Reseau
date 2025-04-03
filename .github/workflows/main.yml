@@ -24,10 +24,38 @@ jobs:
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
 
-    - name: Install pytest
+    - name: Install dependencies
       run: |
         pip install pytest
+        pip install sphinx  # Installe Sphinx
 
     - name: Run tests with pytest
       run: |
         pytest  # Lance pytest pour exécuter les tests unitaires
+
+  docs:
+    runs-on: ubuntu-latest  # Utilise une image Ubuntu
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Clone ton repo
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'  # Utilise la version 3.9 de Python (ajuste selon tes besoins)
+
+    - name: Install Sphinx
+      run: |
+        pip install sphinx
+
+    - name: Build Sphinx docs
+      run: |
+        cd C:/Users/Administrateur/Downloads/scanner/scanner_project/config/conf.py
+        make html  # Génère la documentation en HTML
+
+    - name: Upload documentation as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: sphinx-docs
+        path: docs/_build/html  # Télécharge la documentation générée
