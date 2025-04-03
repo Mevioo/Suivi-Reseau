@@ -1,7 +1,13 @@
+import sys
+import os
 import asyncio
 import pytest
 from unittest.mock import patch
-from scanner import ping_ip
+
+# Ajoute le répertoire contenant 'scanner.py' au chemin d'importation
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../scanner')))
+
+from scanner import ping_ip  # Maintenant Python pourra trouver 'scanner.py'
 
 @pytest.mark.asyncio
 async def test_ping_ip_active():
