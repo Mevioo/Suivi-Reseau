@@ -2,7 +2,7 @@ import os
 import sys
 
 # Ajoute le chemin du projet pour que Sphinx trouve les modules Python
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("Downloads/scanner/scanner_project"))
 
 # Configuration de base
 project = 'Suivi-Reseau'
