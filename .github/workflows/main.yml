@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Version mise à jour à v3
+      uses: actions/checkout@v2  # Clone ton repo
 
     - name: Set up Python
-      uses: actions/setup-python@v3  # Version mise à jour à v3
+      uses: actions/setup-python@v2
       with:
         python-version: '3.9'  # Utilise la version 3.9 de Python (ajuste selon tes besoins)
 
@@ -31,26 +31,3 @@ jobs:
     - name: Run tests with pytest
       run: |
         pytest  # Lance pytest pour exécuter les tests unitaires
-
-  docs:
-    runs-on: ubuntu-latest  # Utilise une image Ubuntu
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Version mise à jour à v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v3  # Version mise à jour à v3
-      with:
-        python-version: '3.9'  # Utilise la version 3.9 de Python (ajuste selon tes besoins)
-
-    - name: Build Sphinx docs
-      run: |
-        cd docs  # Va dans le dossier contenant les fichiers Sphinx
-        make html  # Génère la documentation en HTML
-
-    - name: Upload documentation as artifact
-      uses: actions/upload-artifact@v2  # Utilisation de la version stable v2
-      with:
-        name: sphinx-docs
-        path: docs/_build/html  # Télécharge la documentation générée
