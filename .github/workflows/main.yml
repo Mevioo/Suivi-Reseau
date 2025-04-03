@@ -51,5 +51,5 @@ jobs:
 
     - name: Build Sphinx docs
       run: |
-        cd C:/Users/Administrateur/Downloads/scanner/scanner_project/config/conf.py  # Va dans le dossier contenant les fichiers Sphinx
+        cd Downloads/scanner/scanner_project/config/conf.py  # Va dans le dossier contenant les fichiers Sphinx
         make html  # Génère la documentation en HTML
