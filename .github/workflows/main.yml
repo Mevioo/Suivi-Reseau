@@ -50,7 +50,7 @@ jobs:
         make html  # Génère la documentation en HTML
 
     - name: Upload documentation as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # Utilise la dernière version stable
       with:
         name: sphinx-docs
         path: docs/_build/html  # Télécharge la documentation générée
