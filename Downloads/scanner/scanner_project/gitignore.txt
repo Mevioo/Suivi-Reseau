@@ -1,16 +1,73 @@
-# Ignorer les fichiers et répertoires système
-/.vscode/
-/AppData/
-/Application Data/
-/Contacts/
-/Cookies/
-/Desktop/
-/Documents/
-/OneDrive/
-/Pictures/
-/Videos/
-/Saved Games/
-/ntuser.dat
-*.exe
-*.log
+# Ignorer les fichiers Python compilés
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Ignorer les fichiers de configuration d'environnement virtuel
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+
+# Ignorer les fichiers d'IDE
+.vscode/
+.idea/
+
+# Ignorer les fichiers de configuration de l'éditeur
+*.swp
+*.swo
+*~ 
 *.bak
+
+# Ignorer les fichiers de logs
+*.log
+
+# Ignorer les fichiers de configuration de Python
+*.ini
+*.cfg
+
+# Ignorer les fichiers systèmes (Windows, macOS, etc.)
+.DS_Store
+Thumbs.db
+
+# Ignorer les répertoires de données utilisateur (Windows)
+AppData/
+Application Data/
+Contacts/
+Cookies/
+Desktop/
+Documents/
+OneDrive/
+Pictures/
+Videos/
+Saved Games/
+
+# Ignorer les fichiers temporaires (Windows)
+*.bak
+*.tmp
+
+# Ignorer les fichiers système spécifiques (Windows)
+ntuser.dat
+ntuser.dat.LOG1
+ntuser.dat.LOG2
+ntuser.ini
+
+# Ignorer les fichiers générés par l'outil de packaging Python
+*.tar.gz
+*.whl
+
+# Ignorer les fichiers exécutables (Windows)
+*.exe
+*.dll
+*.so
+
+# Ignorer les répertoires ou fichiers temporaires de l'éditeur
+*~
+*.swp
+*.swo
+
+# Ignorer le fichier requirements.txt s'il n'est pas nécessaire
+requirements.txt
