@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.pyc
+build/
 
 # Ignorer les fichiers de configuration d'environnement virtuel
 venv/
@@ -71,3 +72,13 @@ ntuser.ini
 
 # Ignorer le fichier requirements.txt s'il n'est pas nécessaire
 requirements.txt
+
+#=== Documentation Sphinx ===
+docs/_build/
+docs/_static/
+docs/_templates/
+
+#=== Généré par le script ===
+
+data/results/
+resultats.csv
