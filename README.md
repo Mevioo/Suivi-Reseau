@@ -30,8 +30,8 @@ cd Suivi-Reseau
 ### Scan d'une plage IP
 
 ```bash
-python scanner.py --range 192.168.1.0/24
-python scanner.py --range 192.168.1.0
+python .\src\scanner.py --range 192.168.1.x/24
+python .\src\scanner.py --range 192.168.1.x
 ```
 
 ### Scan depuis un fichier
