@@ -1,7 +1,7 @@
 """
 scanner.py
 
-Ce module fournit un utilitaire de scan réseau asynchrone utilisant `ping`.
+Ce module fournit un utilitaire de scan réseau asynchrone utilisant ping.
 
 Il permet de scanner une plage d'adresses IP ou une liste provenant d'un
 fichier
