@@ -1,17 +1,11 @@
-import asyncio
-import csv
-import ipaddress
-import argparse
-import subprocess
-import os
-
 """
 scanner.py
 
 Ce module fournit un utilitaire de scan réseau asynchrone utilisant `ping`.
 
-Il permet de scanner une plage d'adresses IP ou une liste provenant d'un fichier,
-et sauvegarde les résultats dans un fichier CSV. Ce script est conçu pour être 
+Il permet de scanner une plage d'adresses IP ou une liste provenant d'un
+fichier
+et sauvegarde les résultats dans un fichier CSV. Ce script est conçu pour être
 exécuté depuis la ligne de commande avec des arguments `--range` ou `--file`.
 
 Fonctionnalités :
@@ -31,7 +25,16 @@ Date:
     Avril 2025
 """
 
+import asyncio
+import csv
+import ipaddress
+import argparse
+import subprocess
+import os
+
 # Fonction pour effectuer un ping sur une adresse IP
+
+
 async def ping_ip(ip):
     """
     Effectue un ping asynchrone sur une adresse IP.
@@ -43,14 +46,20 @@ async def ping_ip(ip):
         tuple: Une tuple contenant l'IP (str), le statut ("Active"/"Inactive"),
                et None pour une éventuelle extension.
     """
-    result = await asyncio.to_thread(subprocess.run, 
-                                      ['ping', '-n', '1', ip],
-                                      capture_output=True, text=True)
+    result = await asyncio.to_thread(
+        subprocess.run,
+        ['ping', '-n', '1', ip],
+        capture_output=True,
+        text=True
+    )
+
     if "TTL=" in result.stdout:
         return ip, "Active", None
     return ip, "Inactive", None
 
 # Fonction pour scanner une plage d'adresses IP
+
+
 async def scan_range(ip_range):
     """
     Scanne une plage d'adresses IP.
@@ -66,53 +75,72 @@ async def scan_range(ip_range):
     return await asyncio.gather(*tasks)
 
 # Fonction pour scanner des adresses IP à partir d'un fichier
+
+
 async def scan_file(file_path):
     """
     Scanne des adresses IP lues depuis un fichier texte.
 
     Args:
-        file_path (str): Chemin du fichier contenant les adresses IP (une par ligne).
+        file_path (str): Chemin du fichier contenant les adresses IP
+          (une par ligne).
 
     Returns:
         list: Liste de tuples (ip, statut, None) pour chaque IP scannée.
     """
-    with open(file_path, mode='r') as file:
+    with open(file_path, mode='r', encoding='utf-8') as file:
         lines = file.readlines()
     tasks = [ping_ip(line.strip()) for line in lines if line.strip()]
     return await asyncio.gather(*tasks)
 
 # Fonction principale qui gère les entrées et lance le scan
-async def main():
-    """
-    Point d'entrée principal du script.
 
-    Gère les arguments de la ligne de commande pour lancer le scan d'une
-    plage IP ou d'un fichier d'IP, puis affiche et sauvegarde les résultats.
+
+async def run_scanner(args=None):
     """
-    parser = argparse.ArgumentParser(description='Asynchronous Network Scanner')
-    parser.add_argument('--range', help='IP range to scan (e.g., 192.168.1.0/24)')
+    Point d'entrée logique du scanner (séparé de __main__ pour être testable).
+
+    Args:
+        args (list, optional): Liste d'arguments pour argparse. Si None,
+         utilise sys.argv.
+    """
+
+    parser = argparse.ArgumentParser(
+        description='Asynchronous Network Scanner'
+    )
+
+    parser.add_argument(
+        '--range',
+        help='IP range to scan (e.g., 192.168.1.0/24)'
+    )
+
     parser.add_argument('--file', help='File containing IP addresses to scan')
-    args = parser.parse_args()
-    
-    if args.range:
-        results = await scan_range(args.range)
-    elif args.file:
-        results = await scan_file(args.file)
+    parsed_args = parser.parse_args(args)
+
+    if parsed_args.range:
+        results = await scan_range(parsed_args.range)
+    elif parsed_args.file:
+        results = await scan_file(parsed_args.file)
     else:
         print("Please specify either --range or --file.")
         return
-    
+
     if not any(status == "Active" for _, status, _ in results):
         print("Le programme n'a pas trouvé d'autre adresse IP.")
         return
 
     os.makedirs('data/results', exist_ok=True)
-    with open('data/results/resultat.csv', mode='w', newline='') as file:
+    with open(
+        'data/results/resultat.csv',
+        mode='w',
+        newline='',
+        encoding='utf-8'
+    ) as file:
         writer = csv.writer(file)
         writer.writerow(["IP", "Status", "Ping (ms)"])
         for row in results:
             writer.writerow(row)
-    
+
     for ip, status, _ in results:
         if status == "Active":
             print(f"{ip} Active")
@@ -120,6 +148,11 @@ async def main():
             print(f"{ip} Inactive")
     print("Résultats sauvegardés dans data/results/resultat.csv")
 
-# Lancer l'application
-if __name__ == '__main__':
-    asyncio.run(main())
+
+def main():
+    """Lance l'application scanner en mode CLI."""
+    asyncio.run(run_scanner())
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()
