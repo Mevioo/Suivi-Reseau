@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
+
 """
 scanner.py
 
-Ce module fournit un utilitaire de scan réseau asynchrone utilisant ping.
+Ce module fournit un utilitaire de scan réseau asynchrone utilisant `ping`.
 
 Il permet de scanner une plage d'adresses IP ou une liste provenant d'un
-fichier
-et sauvegarde les résultats dans un fichier CSV. Ce script est conçu pour être
+fichier et sauvegarde les résultats dans un fichier CSV. Ce script est conçu pour être
 exécuté depuis la ligne de commande avec des arguments `--range` ou `--file`.
 
 Fonctionnalités :
@@ -32,8 +31,7 @@ import ipaddress
 import argparse
 import subprocess
 import os
-
-# Fonction pour effectuer un ping sur une adresse IP
+import platform
 
 
 async def ping_ip(ip):
@@ -47,18 +45,21 @@ async def ping_ip(ip):
         tuple: Une tuple contenant l'IP (str), le statut ("Active"/"Inactive"),
                et None pour une éventuelle extension.
     """
+    if platform.system().lower() == "windows":
+        command = ['ping', '-n', '1', ip]
+    else:
+        command = ['ping', '-c', '1', ip]
+
     result = await asyncio.to_thread(
         subprocess.run,
-        ['ping', '-n', '1', ip],
+        command,
         capture_output=True,
         text=True
     )
 
-    if "TTL=" in result.stdout:
+    if "ttl=" in result.stdout.lower():
         return ip, "Active", None
     return ip, "Inactive", None
-
-# Fonction pour scanner une plage d'adresses IP
 
 
 async def scan_range(ip_range):
@@ -74,8 +75,6 @@ async def scan_range(ip_range):
     network = ipaddress.ip_network(ip_range, strict=False)
     tasks = [ping_ip(str(ip)) for ip in network.hosts()]
     return await asyncio.gather(*tasks)
-
-# Fonction pour scanner des adresses IP à partir d'un fichier
 
 
 async def scan_file(file_path):
@@ -93,8 +92,6 @@ async def scan_file(file_path):
         lines = file.readlines()
     tasks = [ping_ip(line.strip()) for line in lines if line.strip()]
     return await asyncio.gather(*tasks)
-
-# Fonction principale qui gère les entrées et lance le scan
 
 
 async def run_scanner(args=None):
@@ -143,10 +140,7 @@ async def run_scanner(args=None):
             writer.writerow(row)
 
     for ip, status, _ in results:
-        if status == "Active":
-            print(f"{ip} Active")
-        else:
-            print(f"{ip} Inactive")
+        print(f"{ip} {status}")
     print("Résultats sauvegardés dans data/results/resultat.csv")
 
 
