@@ -1,74 +1,103 @@
-🌐 Scanner Réseau 
 
-Ce projet Python permet de scanner un réseau local de manière asynchrone pour détecter les machines actives à l’aide de pings ICMP. Il est possible de scanner :
+# Suivi-Réseau
 
-Une plage d’adresses IP (ex: 192.168.1.0/24)
+## Présentation
 
+Le projet **Suivi-Réseau** est un utilitaire Python conçu pour faciliter la gestion et l'analyse des réseaux locaux. Il permet de vérifier rapidement la disponibilité des équipements réseau grâce à un scan asynchrone utilisant la commande `ping`. Destiné à des administrateurs système ou à toute personne souhaitant réaliser des diagnostics réseau efficaces, Suivi-Réseau propose une prise en main simple et intuitive via la ligne de commande.
 
-⚙️ Fonctionnalités
-🔁 Scan asynchrone rapide via asyncio
+## Fonctionnalités
 
-💾 Export automatique des résultats vers un fichier results.csv
+- **Ping asynchrone** : Exécution rapide et simultanée des tests de connectivité.
+- **Scan par plage CIDR** : Analyse complète de plages IP.
+- **Scan depuis fichier** : Chargement simple des adresses IP à partir d'un fichier texte.
+- **Export CSV automatique** : Résultats sauvegardés clairement.
 
-✅ Indique si chaque hôte est actif ou inactif
+## Prérequis
 
-📦 Prérequis
-Python 3.7+
+- Python 3.10 ou supérieur
 
-Fonctionne sous Windows (commande ping -n)
+## Installation
 
+Clonez et préparez le projet rapidement :
 
-🚀 Installation
-bash
-Copier
-Modifier
-git clone https://github.com/Mevioo/Suivi-Reseau
-cd scanner-reseau
-python -m venv venv
-source venv/bin/activate  # ou venv\Scripts\activate sous Windows
-pip install -r requirements.txt  # si nécessaire
-▶️ Utilisation
-1. 📁 Scanner depuis un fichier texte
-Le fichier doit contenir une IP par ligne. Exemple :
+```bash
+git clone https://github.com/Mevioo/Suivi-Reseau.git
+cd Suivi-Reseau
+```
 
-Copier
-Modifier
-192.168.1.10
-192.168.1.20
-Commande :
+## Utilisation
 
-bash
-Copier
-Modifier
-python scanner.py --file chemin/vers/fichier.txt
+### Scan d'une plage IP
 
-
-2. 🌐 Scanner une plage IP
-Utilise une notation CIDR, comme :
-
-bash
-Copier
-Modifier
+```bash
 python scanner.py --range 192.168.1.0/24
-💾 Résultats
-Les résultats sont enregistrés dans un fichier results.csv automatiquement, au format :
+python scanner.py --range 192.168.1.0
+```
 
-IP	Status	Ping (ms)
-192.168.1.10	Active	-
-192.168.1.20	Inactive	-
-🛠 Exemple complet
-bash
-Copier
-Modifier
-python scanner.py --range 192.168.1.0/24
-python-repl
-Copier
-Modifier
-192.168.1.1 Active
-192.168.1.2 Inactive
-...
-Résultats sauvegardés dans results.csv
+### Scan depuis un fichier
 
+Créer un fichier `ips.txt` avec une adresse IP par ligne :
 
-⚠️ Avertissement légal
-❗ N’effectuez pas de scans sur des réseaux sans autorisation. Le scan de ports ou d’adresses IP sans consentement est interdit dans de nombreux pays et peut être considéré comme une tentative d’intrusion.
+```
+192.168.1.1
+192.168.1.2
+192.168.1.3
+```
+
+Exécutez :
+
+```bash
+python scanner.py --file ips.txt
+```
+
+Les résultats s'affichent dans la console et sont enregistrés dans :
+
+```
+data/results/resultat.csv
+```
+
+## Documentation
+
+Consultez la documentation complète sur [Suivi-Réseau Documentation](https://Mevioo.github.io/suivi-reseau/).
+
+## Structure du projet
+
+```
+SUVI-RESEAU/
+├── .github/
+│   └── workflows/
+│       ├── deploiement-doc.yml
+│       └── tests.yml
+├── data/
+│   ├── results/
+│   │   └── resultat.csv
+│   └── ips.txt
+├── docs/
+│   ├── build/
+│   ├── source/
+│   │   ├── api.rst
+│   │   ├── conf.py
+│   │   ├── index.rst
+│   │   └── introduction.rst
+│   ├── make.bat
+│   └── Makefile
+├── src/
+│   ├── __pycache__/
+│   ├── __init__.py
+│   └── scanner.py
+├── tests/
+│   ├── __pycache__/
+│   └── test_scanner.py
+├── .coverage
+├── .gitignore
+├── doc
+└── README.md
+```
+
+## Auteur
+
+**Lucas Guyon**
+
+## Licence
+
+Ce projet est sous licence MIT.
