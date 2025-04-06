@@ -1,7 +1,8 @@
 import unittest
-import asyncio
+
 from unittest.mock import patch, MagicMock, mock_open
 from src import scanner
+
 
 class TestScanner(unittest.IsolatedAsyncioTestCase):
 
@@ -21,7 +22,9 @@ class TestScanner(unittest.IsolatedAsyncioTestCase):
 
     async def test_scan_range(self):
         async def mock_ping_ip(ip):
-            return (ip, "Active", None) if ip.endswith(".1") else (ip, "Inactive", None)
+            if ip.endswith(".1"):
+                return ip, "Active", None
+            return ip, "Inactive", None
 
         with patch("src.scanner.ping_ip", side_effect=mock_ping_ip):
             result = await scanner.scan_range("192.168.1.0/30")
@@ -34,7 +37,9 @@ class TestScanner(unittest.IsolatedAsyncioTestCase):
         content = "\n".join(ip_list)
 
         async def mock_ping_ip(ip):
-            return (ip, "Active", None) if ip.endswith(".1") else (ip, "Inactive", None)
+            if ip.endswith(".1"):
+                return ip, "Active", None
+            return ip, "Inactive", None
 
         with patch("builtins.open", new_callable=mock_open, read_data=content):
             with patch("src.scanner.ping_ip", side_effect=mock_ping_ip):
@@ -44,32 +49,56 @@ class TestScanner(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result[1][0], ip_list[1])
 
     async def test_run_scanner_with_range(self):
-        mock_result = [("192.168.1.1", "Active", None), ("192.168.1.2", "Inactive", None)]
+        mock_result = [
+            ("192.168.1.1", "Active", None),
+            ("192.168.1.2", "Inactive", None),
+        ]
 
-        with patch("src.scanner.scan_range", return_value=mock_result),              patch("src.scanner.os.makedirs"),              patch("builtins.open", new_callable=mock_open):
+        with (
+            patch("src.scanner.scan_range", return_value=mock_result),
+            patch("src.scanner.os.makedirs"),
+            patch("builtins.open", new_callable=mock_open),
+        ):
             await scanner.run_scanner(['--range', '192.168.1.0/30'])
 
     async def test_run_scanner_with_file(self):
         mock_result = [("192.168.1.3", "Active", None)]
 
-        with patch("src.scanner.scan_file", return_value=mock_result),              patch("src.scanner.os.makedirs"),              patch("builtins.open", new_callable=mock_open):
+        with (
+            patch("src.scanner.scan_file", return_value=mock_result),
+            patch("src.scanner.os.makedirs"),
+            patch("builtins.open", new_callable=mock_open),
+        ):
             await scanner.run_scanner(['--file', 'ips.txt'])
 
     async def test_run_scanner_no_args(self):
         with patch("builtins.print") as mocked_print:
             await scanner.run_scanner([])
-            mocked_print.assert_called_with("Please specify either --range or --file.")
+            mocked_print.assert_called_with(
+                "Please specify either --range or --file."
+            )
 
     async def test_run_scanner_prints(self):
-        mock_result = [("192.168.1.1", "Active", None), ("192.168.1.2", "Inactive", None)]
+        mock_result = [
+            ("192.168.1.1", "Active", None),
+            ("192.168.1.2", "Inactive", None),
+        ]
 
-        with patch("src.scanner.scan_range", return_value=mock_result),              patch("src.scanner.os.makedirs"),              patch("builtins.open", new_callable=mock_open),              patch("builtins.print") as mock_print:
+        with (
+            patch("src.scanner.scan_range", return_value=mock_result),
+            patch("src.scanner.os.makedirs"),
+            patch("builtins.open", new_callable=mock_open),
+            patch("builtins.print") as mock_print,
+        ):
 
             await scanner.run_scanner(['--range', '192.168.1.0/30'])
 
             mock_print.assert_any_call("192.168.1.1 Active")
             mock_print.assert_any_call("192.168.1.2 Inactive")
-            mock_print.assert_any_call("Résultats sauvegardés dans data/results/resultat.csv")
+            mock_print.assert_any_call(
+                "Résultats sauvegardés dans data/results/resultat.csv"
+            )
+
 
 if __name__ == '__main__':
     unittest.main()
