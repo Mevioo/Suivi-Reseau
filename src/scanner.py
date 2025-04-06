@@ -36,37 +36,9 @@ import os
 # Fonction pour effectuer un ping sur une adresse IP
 
 
-import platform
-
 async def ping_ip(ip):
     """
     Effectue un ping asynchrone sur une adresse IP.
-
-    Args:
-        ip (str): Adresse IP à tester.
-
-    Returns:
-        tuple: Une tuple contenant l'IP (str), le statut ("Active"/"Inactive"),
-               et None pour une éventuelle extension.
-    """
-    system = platform.system().lower()
-
-    if system == "windows":
-        cmd = ["ping", "-n", "1", ip]
-    else:
-        cmd = ["ping", "-c", "1", "-W", "1", ip]
-
-    result = await asyncio.to_thread(
-        subprocess.run,
-        cmd,
-        capture_output=True,
-        text=True
-    )
-
-    if "ttl=" in result.stdout.lower():
-        return ip, "Active", None
-    return ip, "Inactive", None
-
 
     Args:
         ip (str): Adresse IP à tester.
