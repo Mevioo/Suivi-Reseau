@@ -56,7 +56,7 @@ Exécutez :
 ### Sur Windows
 
 ```bash
-python scanner.py --file ips.txt
+python src\scanner.py --file data\ips.txt
 ```
 
 ### Sur linux
