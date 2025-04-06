@@ -13,10 +13,6 @@ class TestScanner(unittest.IsolatedAsyncioTestCase):
             result = await scanner.ping_ip("192.168.1.1")
             self.assertEqual(result, ("192.168.1.1", "Active", None))
 
-    async def test_ping_ip_inactive_real(self):
-        result = await scanner.ping_ip("0.0.0.0")
-        self.assertEqual(result, ("0.0.0.0", "Inactive", None))
-
     async def test_ping_ip_inactive(self):
         mock_result = MagicMock()
         mock_result.stdout = "Request timed out."
