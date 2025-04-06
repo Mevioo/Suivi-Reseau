@@ -58,7 +58,7 @@ data/results/resultat.csv
 
 ## Documentation
 
-Consultez la documentation complète sur [Suivi-Réseau Documentation](https://Mevioo.github.io/suivi-reseau/).
+Consultez la documentation complète sur [Suivi-Réseau Documentation](https://mevioo.github.io/Suivi-Reseau/).
 
 ## Structure du projet
 
