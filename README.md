@@ -27,11 +27,18 @@ cd Suivi-Reseau
 
 ## Utilisation
 
-### Scan d'une plage IP
+### Scan d'une plage IP sur Windows
 
 ```bash
 python .\src\scanner.py --range 192.168.1.x/24
 python .\src\scanner.py --range 192.168.1.x
+```
+
+### Scan d'une plage IP sur Linux 
+
+```bash
+sudo python3 ./src/scanner.py --range 192.168.1.x
+sudo python3 ./src/scanner.py --range 192.168.1.x/24
 ```
 
 ### Scan depuis un fichier
@@ -46,8 +53,16 @@ Créer un fichier `ips.txt` avec une adresse IP par ligne :
 
 Exécutez :
 
+### Sur Windows
+
 ```bash
 python scanner.py --file ips.txt
+```
+
+### Sur linux
+
+```
+sudo python3 ./src/scanner.py --file ./data/ips.txt
 ```
 
 Les résultats s'affichent dans la console et sont enregistrés dans :
